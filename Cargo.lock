@@ -283,6 +283,7 @@ dependencies = [
  "askama_axum",
  "axum",
  "fancy-regex",
+ "lazy_static",
  "serde",
  "serde_json",
  "sqlx",
