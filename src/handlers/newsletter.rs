@@ -1,11 +1,10 @@
+use crate::{models::Email, templates};
 use axum::{
     response::{IntoResponse, Redirect},
     routing::{get, post},
     Form,
 };
 use serde::Deserialize;
-
-use crate::{models::Email, templates};
 
 pub fn router() -> axum::Router {
     axum::Router::new()
