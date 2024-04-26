@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="/public/css/main.css" />
+        <title>
+            {% block title %}{{ title }}{% endblock %}
+        </title>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <div>
+            <nav class="bg-white shadow">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center space-x-4 h-16">
+                        <a href="/"
+                           class="text-indigo-700 text-lg font-medium hover:text-indigo-900">Home</a>
+                    </div>
+                </div>
+            </nav>
+            <div id="content"
+                 class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <div class="prose lg:prose-lg xl:prose-xl prose-indigo">
+                    {% block content %}<p>Hello</p>{% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
