@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Confirm your newsletter subscription{% endblock %}
+{% block content %}
+    <h1>Confirm your newsletter subscription</h1>
+    <p>Press the big button below to confirm your subscription.</p>
+    <form action="/newsletter/confirm"
+          method="post"
+          class="flex items-center max-w-md">
+        <input type="hidden" name="token" value={{ token }} class="focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 text-sm border-gray-300 rounded-md" />
+        <button type="submit"
+                class="ml-3 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex-none">
+            Confirm
+        </button>
+    </form>
+{% endblock %}

@@ -51,6 +51,12 @@ impl Into<String> for Email {
     }
 }
 
+impl ToString for Email {
+    fn to_string(&self) -> String {
+        self.0.clone()
+    }
+}
+
 impl<'de> Deserialize<'de> for Email {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

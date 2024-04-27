@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            insert into newsletter_subscribers (email, token)\n            values ($1, $2)\n            on conflict (email) do update set\n                token = excluded.token,\n                updated = now()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5d3a8ac3ee71709c9d33016b84be1ce10691e70a234ccabe707dfc33702102d0"
+}
