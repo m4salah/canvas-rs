@@ -29,8 +29,8 @@ RUN npm run build
 FROM gcr.io/distroless/cc-debian12
 WORKDIR /app
 
-COPY --from=rust_builder ./src/target/release/canvas-rs ./
+COPY --from=rust_builder ./src/target/release/canvas ./
 COPY --from=node_builder ./src/public ./public/
 
-CMD ["./canvas-rs"]
+CMD ["./canvas"]
 
