@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            update newsletter_subscribers\n            set confirmed = true\n            where token = $1\n            returning email\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "email",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "10525ebc8c159b382ef215ef4093c929a9aff0132db884aa33cb2a7736a4064a"
+}
