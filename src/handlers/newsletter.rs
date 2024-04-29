@@ -1,17 +1,15 @@
-use crate::{models::Email, templates};
+use crate::{models::Email, storage::newsletter::AppState, templates};
 use axum::{
+    debug_handler,
     extract::{Query, State},
     http::StatusCode,
     response::{IntoResponse, Redirect},
     routing::{get, post},
     Form,
 };
-use hex::ToHex;
-use rand::RngCore;
 use serde::Deserialize;
-use sqlx::{PgPool, Pool, Postgres};
 
-pub fn router(pool: Pool<Postgres>) -> axum::Router {
+pub fn router(app_state: AppState) -> axum::Router {
     axum::Router::new()
         .route("/signup", post(newsletter_signup))
         .route(
@@ -20,7 +18,7 @@ pub fn router(pool: Pool<Postgres>) -> axum::Router {
         )
         .route("/confirmed", get(newsletter_confirmed))
         .route("/thanks", get(newsletter_thanks))
-        .with_state(pool)
+        .with_state(app_state)
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -33,32 +31,22 @@ struct EmailConfirmRequest {
     token: String,
 }
 
+#[debug_handler]
 async fn newsletter_signup(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Form(signup_request): Form<SignupRequest>,
 ) -> Result<Redirect, (StatusCode, String)> {
-    let mut secret = [0u8; 32];
-    rand::thread_rng().fill_bytes(&mut secret);
-    sqlx::query!(
-        r#"
-            insert into newsletter_subscribers (email, token)
-            values ($1, $2)
-            on conflict (email) do update set
-                token = excluded.token,
-                updated = now()
-        "#,
-        signup_request.email.to_string(),
-        secret.encode_hex::<String>()
-    )
-    .execute(&pool)
-    .await
-    .map_err(|err| {
-        println!("error inserting to the database: {err}");
-        (
-            StatusCode::BAD_GATEWAY,
-            "error signing up, refresh to try again".to_string(),
-        )
-    })?;
+    app_state
+        .newsletter_store
+        .signup_for_newsletter(signup_request.email)
+        .await
+        .map_err(|err| {
+            println!("error inserting to the database: {err}");
+            (
+                StatusCode::BAD_GATEWAY,
+                "error signing up, refresh to try again".to_string(),
+            )
+        })?;
     Ok(Redirect::to("/newsletter/thanks"))
 }
 
@@ -71,23 +59,13 @@ pub struct ConfirmedEmail {
 }
 
 async fn newsletter_confirm(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Form(confirm_request): Form<EmailConfirmRequest>,
 ) -> Result<Redirect, (StatusCode, String)> {
-    let mut secret = [0u8; 32];
-    rand::thread_rng().fill_bytes(&mut secret);
-    let res = sqlx::query_as!(
-        ConfirmedEmail,
-        r#"
-		update newsletter_subscribers
-		set confirmed = true
-		where token = $1
-		returning email
-        "#,
-        confirm_request.token,
-    )
-    .fetch_one(&pool)
-    .await;
+    let res = app_state
+        .newsletter_store
+        .confirm_newsletter_signup(confirm_request.token)
+        .await;
 
     if let Err(e) = res {
         match e {

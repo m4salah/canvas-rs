@@ -5,7 +5,7 @@ use sqlx::PgPool;
 use crate::models::Email;
 use async_trait::async_trait;
 
-use super::newsletter::{ConfirmSignup, NewsletterSignup, Signup};
+use super::newsletter::{ConfirmSignup, NewsletterSignup, NewsletterStore, Signup};
 
 #[derive(Clone)]
 pub struct Database {
@@ -20,6 +20,7 @@ impl Database {
     }
 }
 
+impl NewsletterStore for Database {}
 impl NewsletterSignup for Database {}
 
 #[async_trait]
